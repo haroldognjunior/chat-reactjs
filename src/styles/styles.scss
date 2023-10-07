@@ -1,0 +1,85 @@
+html {
+  background-color: #e1e1e1;
+}
+.container {
+  margin: 20px;
+  text-align: center;
+  @media (min-width: 768px) {
+    margin: 100px;
+  }
+}
+
+input {
+  border-color: #ff5c;
+  width: 200px;
+  height: 40px;
+  padding-left: 1rem;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 3px;
+  border: 1px solid #0fbfbf;
+  @media (min-width: 768px) {
+    width: 500px;
+  }
+}
+
+//divs style
+.userName {
+  width: 300px;
+}
+
+.bottomChat {
+  bottom: 3em;
+  left: 0;
+  right: 0;
+
+  @media (min-width: 768px) {
+    position: absolute;
+  }
+}
+
+.messages {
+  height: 400px;
+  overflow: auto;
+  @media (min-width: 768px) {
+    height: 300px;
+  }
+}
+
+//elements
+.smallText {
+  color: gray;
+  font-size: 0.8em;
+}
+.messageInput {
+  margin: 0 1em 0 1em;
+}
+
+.textMessage {
+  text-align: left;
+  background-color: black;
+  color: white;
+  width: 300px;
+  border-radius: 10px;
+  padding: 0.5em;
+  margin: 1em auto 1em auto;
+  @media (min-width: 768px) {
+    width: 400px;
+  }
+}
+
+.user {
+  font-style: italic;
+}
+.body {
+  font-weight: bold;
+}
+.pickerImg {
+  width: 1.5em;
+}
+
+.submitButton {
+  border-radius: 2em;
+  padding: 1em;
+  border-color: #282828;
+}

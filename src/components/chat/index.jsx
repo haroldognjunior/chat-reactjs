@@ -20,13 +20,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [userName, setUserName] = useState("");
   const [fullHour, setFullHour] = useState("");
-  const [listMessages, setListMessages] = useState([
-    {
-      body: "Bienvenido al chat",
-      user: "admin",
-      hour: fullHour,
-    },
-  ]);
+  const [listMessages, setListMessages] = useState([]);
   const [showPicker, setShowPicker] = useState(false);
   const [activedButton, setActivedButton] = useState(false);
 
@@ -64,29 +58,38 @@ const Chat = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <input
+        className="userName"
         type="text"
         onChange={e => setUserName(e.target.value)}
         placeholder="Ingrese el nombre del usuario"
       ></input>
       <div>
-        {listMessages.map((message, i) => (
-          <p key={`${message}-${i}`}>
-            {message.hour} {message.user}: {message.body}
-          </p>
-        ))}
-
+        <p>Qué bueno verte por acá =)</p>
+        {listMessages.length === 0 && <p class="smallText">Escribe tu mensaje.</p>}
+        <div className="messages">
+          {listMessages.map(
+            (message, i) =>
+              message.hour && (
+                <p className="textMessage" key={`${(message, i)}`}>
+                  {message.hour} <span className="user">{message.user}</span> :{" "}
+                  <span className="body">{message.body}</span>
+                </p>
+              )
+          )}
+        </div>
         <form onSubmit={handleSubmit}>
-          <p>Escribe tu mensaje.</p>
-          <div>
+          <div className="bottomChat">
             <img
+              className="pickerImg"
               src="https://icons.getbootstrap.com/assets/icons/emoji-smile.svg"
               onClick={() => setShowPicker(!showPicker)}
               alt="emoji"
             />
             {showPicker && <Picker onEmojiClick={onEmojiClick} />}
             <input
+              className="messageInput"
               value={message}
               placeholder="Escribe tu mensaje"
               onChange={e => {
@@ -102,7 +105,7 @@ const Chat = () => {
             />
 
             {/* Botón de envío */}
-            <button type="submit" disabled={!activedButton}>
+            <button className="submitButton" type="submit" disabled={!activedButton}>
               Enviar
             </button>
           </div>
