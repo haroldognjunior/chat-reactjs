@@ -4,7 +4,19 @@ import io from "socket.io-client";
 
 const socket = io(process.env.REACT_APP_SOCKET_URL);
 
+// Función de utilidad para agregar ceros a la izquierda
+const addLeadingZero = value => (value < 10 ? "0" + value : value);
+
+const getFormattedTime = () => {
+  const currentDate = new Date();
+  const hours = addLeadingZero(currentDate.getHours());
+  const minutes = addLeadingZero(currentDate.getMinutes());
+  const seconds = addLeadingZero(currentDate.getSeconds());
+  return `[${hours}:${minutes}:${seconds}]`;
+};
+
 const Chat = () => {
+  // Estados del componente
   const [message, setMessage] = useState("");
   const [userName, setUserName] = useState("");
   const [fullHour, setFullHour] = useState("");
@@ -17,13 +29,19 @@ const Chat = () => {
   ]);
   const [showPicker, setShowPicker] = useState(false);
   const [activedButton, setActivedButton] = useState(false);
-  const currentDate = new Date();
-  const hour = currentDate.getHours() < 10 ? "0" + currentDate.getHours() : currentDate.getHours();
-  const minute =
-    currentDate.getMinutes() < 10 ? "0" + currentDate.getMinutes() : currentDate.getMinutes();
-  const second =
-    currentDate.getSeconds() < 10 ? "0" + currentDate.getSeconds() : currentDate.getSeconds();
 
+  // Efecto para recibir mensajes del servidor
+  useEffect(() => {
+    const receiveMessage = msg => {
+      setListMessages(prevMessages => [...prevMessages, msg]);
+    };
+
+    socket.on("message", receiveMessage);
+
+    return () => socket.off("message", receiveMessage);
+  }, []);
+
+  // Manejo de eventos
   const onEmojiClick = emojiObject => {
     setMessage(prevInput => prevInput + emojiObject.emoji);
     setShowPicker(false);
@@ -32,36 +50,29 @@ const Chat = () => {
   const handleSubmit = e => {
     e.preventDefault();
 
+    // Enviar mensaje al servidor
     socket.emit("message", { body: message, user: userName, hour: fullHour });
 
+    // Agregar el nuevo mensaje a la lista
     const newMsg = {
       body: message,
       user: userName,
       hour: fullHour,
     };
-    setListMessages([...listMessages, newMsg]);
+    setListMessages(prevMessages => [...prevMessages, newMsg]);
     setMessage("");
   };
-
-  useEffect(() => {
-    const receiveMessage = msg => {
-      setListMessages([...listMessages, msg]);
-    };
-    socket.on("message", receiveMessage);
-
-    return () => socket.off("message", receiveMessage);
-  }, [listMessages]);
 
   return (
     <div>
       <input
         type="text"
         onChange={e => setUserName(e.target.value)}
-        placeholder="ingrese el nombre del usuario"
+        placeholder="Ingrese el nombre del usuario"
       ></input>
       <div>
         {listMessages.map((message, i) => (
-          <p key={`${(message, i)}`}>
+          <p key={`${message}-${i}`}>
             {message.hour} {message.user}: {message.body}
           </p>
         ))}
@@ -79,15 +90,18 @@ const Chat = () => {
               value={message}
               placeholder="Escribe tu mensaje"
               onChange={e => {
-                console.log(e.target.value);
-                setMessage(e.target.value);
-                setFullHour(`[${hour}:${minute}:${second}]`);
-                setActivedButton(userName.length > 0);
+                const newMessage = e.target.value;
+                setMessage(newMessage);
+                setFullHour(getFormattedTime());
+
+                // Habilitar o deshabilitar el botón en función de la longitud del mensaje
+                setActivedButton(newMessage.length > 0);
               }}
               type="text"
               name="message"
             />
 
+            {/* Botón de envío */}
             <button type="submit" disabled={!activedButton}>
               Enviar
             </button>
